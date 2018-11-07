@@ -1,0 +1,54 @@
+<script>
+$(document).on('change', ':file', function() {
+    var input = $(this),
+    numFiles = input.get(0).files ? input.get(0).files.length : 1,
+    label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+    input.parent().parent().next(':text').val(label);
+});
+</script>
+
+<h1>CSVインポート</h1>
+<% if flash.now[:fail].present? %>
+  <p class="error-block"><%= flash.now[:fail] %></p>
+<% elsif flash.now[:success].present? %>
+  <p><%= flash.now[:success]%></p>
+<% end %>
+<br>
+
+<%= form_tag "/import_csv", :method => :post, :multipart => true do %>
+  <div class="form-group">
+      <div class="input-group">
+      <label class="input-group-btn">
+        <span class="btn btn-primary">
+          CSVファイル選択<%= file_field_tag :csv, :class => "form-control", :accept => ".csv", :style => "display:none" %>
+        </span>
+      </label>
+      <input type="text" class="form-control" readonly="">
+    </div><br>
+    <button type="submit" class="btn btn-default">取り込み</button>
+  </div>
+<% end %>
+<p>※フォーマットは<a href="/sample.csv">コチラ</a>からダウンロードできます。1列目に"名前"、2列目に"名前カナ"を入力し、取り込みを行ってください。</p>
+<hr>
+<h2>取り込みデータ一覧</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <td>ID</td>
+      <td>名前</td>
+      <td>名前カナ</td>
+      <td>登録日時</td>
+    </tr>
+  </thead>
+  <tbody>
+    <% @persons.each do | person | %>
+      <tr>
+        <td><%= person.id %></td>
+        <td><%= person.name %></td>
+        <td><%= person.kana_name %></td>
+        <td><%= person.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
